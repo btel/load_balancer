@@ -14,13 +14,10 @@ HEARTBEAT_INTERVAL = 1.
 # Process tasks forever
 while True:
     receiver.send_multipart([b'', b'READY'])
-    cmd = receiver.recv()
-
-    # Simple progress indicator for the viewer
-    sys.stdout.write('.')
-    sys.stdout.flush()
+    _, cmd = receiver.recv_multipart()
 
     # Do the work
+    print('processing command %s' % cmd)
     process = subprocess.Popen(cmd, shell=True)
 
     while process.poll() is None:
