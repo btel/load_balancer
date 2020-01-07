@@ -1,0 +1,1 @@
+Simple load balancer based on ZeroMQ that can distribute compute tasks over multiple workers. It can be used for example to batch training models on GPU cards that are installed on the local machine or over the network.
