@@ -16,10 +16,15 @@ while True:
     receiver.send_multipart([b'', b'READY'])
     _, cmd = receiver.recv_multipart()
 
+    if not cmd:
+        print("received empty command. Keep waiting for tasks")
+        time.sleep(HEARTBEAT_INTERVAL)
+        continue
+
     # Do the work
     print('processing command %s' % cmd)
     process = subprocess.Popen(cmd, shell=True)
 
     while process.poll() is None:
-        receiver.send_multipart([b'', b'ALIVE'])
         time.sleep(HEARTBEAT_INTERVAL)
+        receiver.send_multipart([b'', b'ALIVE'])
