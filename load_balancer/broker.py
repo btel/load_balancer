@@ -19,6 +19,7 @@ class ExecutionBroker:
         self.queue = []
         self._workers = {}
         self.available_workers = []
+        self.running = True
 
         self.poller = zmq.Poller()
         self.poller.register(self.backend, zmq.POLLIN)
@@ -46,6 +47,12 @@ class ExecutionBroker:
         workers = self._workers
 
         client, _, payload = frontend.recv_multipart()
+        if payload == b'EOF':
+            # wait for jobs to finish
+            logging.debug('received EOF, waiting for jobs to finish')
+            self.running = False
+            return
+
         self.queue.append(payload)
 
 
@@ -61,7 +68,7 @@ class ExecutionBroker:
 
             workers[worker] = {'payload': payload, 'last_seen': current_time}
             self.backend.send_multipart([worker, b'', payload])
-            logging.debug("Sending payload:", payload)
+            logging.debug("Sending payload: %s", payload)
 
 
     def _event_loop(self):
@@ -79,12 +86,18 @@ class ExecutionBroker:
             if backend in sockets:
                 self.handle_backend_message()
 
-            if frontend in sockets:
+            if frontend in sockets and self.running:
                 self.handle_frontend_message()
 
             self.handle_queue()
 
             self._check_alive()
+
+            if not self.running and not queue and not workers:
+                for w in available_workers:
+                    backend.send_multipart([w, b'', b'EOF'])
+                logging.debug('exiting')
+                break
 
 
     def _check_alive(self):

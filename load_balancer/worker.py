@@ -16,10 +16,9 @@ while True:
     receiver.send_multipart([b'', b'READY'])
     _, cmd = receiver.recv_multipart()
 
-    if not cmd:
-        print("received empty command. Keep waiting for tasks")
-        time.sleep(HEARTBEAT_INTERVAL)
-        continue
+    if cmd == b'EOF':
+        print("received EOF finishing work.")
+        break
 
     # Do the work
     print('processing command %s' % cmd)
