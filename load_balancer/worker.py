@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import zmq
@@ -10,7 +11,7 @@ receiver = context.socket(zmq.DEALER)
 receiver.connect("tcp://localhost:5557")
 
 HEARTBEAT_INTERVAL = 1.
-
+print("worker PID:", os.getpid(), flush=True)
 # Process tasks forever
 while True:
     receiver.send_multipart([b'', b'READY'])
