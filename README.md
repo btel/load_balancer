@@ -1,5 +1,9 @@
 Simple load balancer based on ZeroMQ that can distribute compute tasks over multiple workers. It can be used for example to batch training models on GPU cards that are installed on the local machine or over the network.
 
+Inspired by [Load balancing broker](https://zguide.zeromq.org/docs/chapter3/#A-Load-Balancing-Message-Broker) pattern from ZeroMQ documentation.
+
+
+
 ## Usage
 
 1. Start broker
@@ -41,3 +45,9 @@ python client.py sleep 5
 ```
 python client.py 'python -c "import time; time.sleep(5)"'
 ```
+
+## Ressources
+
+https://hanxiao.io/2019/01/02/Serving-Google-BERT-in-Production-using-Tensorflow-and-ZeroMQ/
+
+
